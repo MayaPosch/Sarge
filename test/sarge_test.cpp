@@ -1,0 +1,52 @@
+/*
+	sarge_test.cpp - Implementation file for the Sarge command line argument parser test.
+	
+	Revision 0
+	
+	Features:
+			- 
+	
+	Notes:
+			-
+			 
+	2019/03/16, Maya Posch
+	
+*/
+
+
+#include "../src/sarge.h"
+
+#include <iostream>
+
+
+int main(int argc, char** argv) {
+	// Create Sarge instance, set stuff, parse stuff.
+	Sarge sarge;
+	
+	sarge.setArgument("h", "help", "Get help.", false);
+	sarge.setArgument("k", "kittens", "K is for kittens. Everyone needs kittens in their life.", true);
+	sarge.setDescription("Sarge command line argument parsing testing app. For demonstration purposes and testing.");
+	sarge.setUsage("sarge_test <options>");
+	
+	if (!sarge.parseArguments(argc, argv)) {
+		std::cerr << "Couldn't parse arguments..." << std::endl;
+		return 1;
+	}
+	
+	std::cout << "Number of flags found: " << sarge.flagCount() << std::endl;
+	
+	if (sarge.exists("help")) {
+		sarge.printHelp();
+	}
+	else {
+		std::cout << "No help requested..." << std::endl;
+	}
+	
+	std::string kittens;
+	if (sarge.getFlag("kittens", kittens)) {
+		std::cout << "Got kittens: " << kittens << std::endl;
+	}
+	
+	return 0;
+}
+
