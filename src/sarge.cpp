@@ -21,21 +21,20 @@
 
 // --- SET ARGUMENT ---
 void Sarge::setArgument(std::string arg_short, std::string arg_long, std::string desc, bool hasVal) {
-	Argument arg;
-	arg.arg_short = arg_short;
-	arg.arg_long = arg_long;
-	arg.description = desc;
-	arg.hasValue = hasVal;
-	arg.parsed = false;
+	std::unique_ptr<Argument> arg(new Argument);
+	arg->arg_short = arg_short;
+	arg->arg_long = arg_long;
+	arg->description = desc;
+	arg->hasValue = hasVal;
 	args.push_back(std::move(arg));
 	
 	// Set up links.
 	if (!arg_short.empty()) {
-		argNames.insert(std::pair<std::string, Argument*>(arg_short, &(args.back())));
+		argNames.insert(std::pair<std::string, Argument*>(arg_short, args.back().get()));
 	}
 	
 	if (!arg_long.empty()) {
-		argNames.insert(std::pair<std::string, Argument*>(arg_long, &(args.back())));
+		argNames.insert(std::pair<std::string, Argument*>(arg_long, args.back().get()));
 	}
 }
 	
@@ -169,7 +168,8 @@ void Sarge::printHelp() {
 	std::cout << "Options: " << std::endl;
 	
 	// Print out the options.
-	for (Argument arg : args) {
-		std::cout << "-" << arg.arg_short << "\t--" << arg.arg_long << "\t\t" << arg.description << std::endl;
+	std::vector<std::unique_ptr<Argument> >::const_iterator it;
+	for (it = args.cbegin(); it != args.cend(); ++it) {
+		std::cout << "-" << (*it)->arg_short << "\t--" << (*it)->arg_long << "\t\t" << (*it)->description << std::endl;
 	}
 }

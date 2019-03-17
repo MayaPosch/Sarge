@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 
 
 struct Argument {
@@ -29,7 +30,7 @@ struct Argument {
 
 
 class Sarge {
-	std::vector<Argument> args;
+	std::vector<std::unique_ptr<Argument> > args;
 	std::map<std::string, Argument*> argNames;
 	bool parsed = false;
 	int flagCounter = 0;
