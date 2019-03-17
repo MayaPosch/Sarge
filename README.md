@@ -1,17 +1,18 @@
 # Sarge #
 
-Sarge is a simple and powerful command line argument parser, consisting out of just 135 lines of well-commented C++ code, contained in a single class:
+Sarge is a simple and powerful command line argument parser, consisting out of just 136 lines of well-commented C++ code, contained in a single class:
 
 
-	github.com/AlDanial/cloc v 1.80  T=0.01 s (255.8 files/s, 28899.8 lines/s)
+	github.com/AlDanial/cloc v 1.80  T=0.01 s (220.4 files/s, 25019.2 lines/s)
 	-------------------------------------------------------------------------------
 	Language                     files          blank        comment           code
 	-------------------------------------------------------------------------------
 	C++                              1             37             35            103
-	C/C++ Header                     1             12              7             32
+	C/C++ Header                     1             12              7             33
 	-------------------------------------------------------------------------------
-	SUM:                             2             49             42            135
+	SUM:                             2             49             42            136
 	-------------------------------------------------------------------------------
+
  
 
 Simply add the header file and source file to one's C++ project and use the class as in the project's test code:
@@ -52,6 +53,20 @@ Simply add the header file and source file to one's C++ project and use the clas
 	}
 
 Only dependencies are a reasonably modern C++ compiler, capable of supporting at least C++11 (STL datastructure improvements).
+
+## Supported flag types ##
+
+Sarge supports both short and long options, prefixed by one or two dashes ('-') respectively.
+
+Short option: `-h`.
+
+Long option: `--help`.
+
+Options can optionally be followed by a value string. This has to be noted when registering the flag with Sarge in one's code. 
+
+It's also supported to supply multiple short options combined to Sarge, e.g.: `-hnklm`. Important here is that options which require a value to follow them have to always be at the end of such a chain.
+
+Providing a string without flag associated with them is at this point not supported.
 
 ## Compiling the test application ##
 
