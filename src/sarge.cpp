@@ -104,14 +104,15 @@ bool Sarge::parseArguments(int argc, char** argv) {
 					flag_it->second->parsed = true;
 					++flagCounter;
 					
-					if (i != (entry.length() - 1) && flag_it->second->hasValue) {
-						// Flag isn't at end, thus cannot have value.
-						std::cerr << "Flag " << k << " needs to be followed by a value string." 
-									<< std::endl;
-						return false;
-					}
-					else {
-						expectValue = true; // Next argument has to be a value string.
+					if (flag_it->second->hasValue) {
+						if (i != (entry.length() - 1)) {
+							// Flag isn't at end, thus cannot have value.
+							std::cerr << "Flag " << k << " needs to be followed by a value string."
+								<< std::endl;
+							return false;
+						} else {
+							expectValue = true; // Next argument has to be a value string.
+						}
 					}
 				}
 			}
