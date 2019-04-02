@@ -59,7 +59,13 @@ bool Sarge::parseArguments(int argc, char** argv) {
 		// same string if they're the short form flag type (one character per flag).
 		std::string entry(argv[i]);
 		
-		if (entry.compare(0, 1, "-") == 0) {
+		if (expectValue) {
+			// Copy value.
+			flag_it->second->value = entry;
+			
+			expectValue = false;
+		}
+		else if (entry.compare(0, 1, "-") == 0) {
 			// Parse flag.
 			// First check for the long form.
 			if (entry.compare(0, 2, "--") == 0) {
@@ -109,12 +115,6 @@ bool Sarge::parseArguments(int argc, char** argv) {
 					}
 				}
 			}
-		}
-		else if (expectValue) {
-			// Copy value.
-			flag_it->second->value = entry;
-			
-			expectValue = false;
 		}
 		else {
 			std::cerr << "Expected flag, not value." << std::endl;

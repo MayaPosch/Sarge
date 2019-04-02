@@ -25,6 +25,7 @@ int main(int argc, char** argv) {
 	
 	sarge.setArgument("h", "help", "Get help.", false);
 	sarge.setArgument("k", "kittens", "K is for kittens. Everyone needs kittens in their life.", true);
+	sarge.setArgument("n", "number", "Gimme a number. Any number.", true);
 	sarge.setDescription("Sarge command line argument parsing testing app. For demonstration purposes and testing.");
 	sarge.setUsage("sarge_test <options>");
 	
@@ -45,6 +46,11 @@ int main(int argc, char** argv) {
 	std::string kittens;
 	if (sarge.getFlag("kittens", kittens)) {
 		std::cout << "Got kittens: " << kittens << std::endl;
+	}
+	
+	std::string number;
+	if (sarge.getFlag("number", number)) {
+		std::cout << "Got number: " << number << std::endl;
 	}
 	
 	return 0;
