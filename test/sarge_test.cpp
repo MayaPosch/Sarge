@@ -26,6 +26,8 @@ int main(int argc, char** argv) {
 	sarge.setArgument("h", "help", "Get help.", false);
 	sarge.setArgument("k", "kittens", "K is for kittens. Everyone needs kittens in their life.", true);
 	sarge.setArgument("n", "number", "Gimme a number. Any number.", true);
+	sarge.setArgument("a", "apple", "Just an apple.", false);
+	sarge.setArgument("b", "bear", "Look, it's a bear.", false);
 	sarge.setDescription("Sarge command line argument parsing testing app. For demonstration purposes and testing.");
 	sarge.setUsage("sarge_test <options>");
 	
