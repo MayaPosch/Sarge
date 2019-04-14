@@ -20,9 +20,9 @@ package Sarge is
 		arg_short: string;
 		arg_long: string;
 		description: string;
-		hasValue: boolean := Boolean.False;
+		hasValue: boolean := False;
 		value: string;
-		parsed: boolean := Boolean.False;
+		parsed: boolean := False;
 	end record;
 	
 	type Argument_Access is access all Argument;

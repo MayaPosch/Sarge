@@ -20,13 +20,13 @@ use Ada.Text_IO;
 package body Sarge is
 	--- SET ARGUMENT ---
 	procedure setArgument(arg_short: in string; arg_long: in string; desc: in string; hasVal: in boolean) is
-		arg: Argument := (arg_short => arg_short, arg_long => arg_long, description => desc, hasValue => hasVal, value => "", parsed => False);
+		arg: aliased Argument := (arg_short => arg_short, arg_long => arg_long, description => desc, hasValue => hasVal, value => "", parsed => False);
 	begin
 		args.append(arg);
 		
 		-- Set up links.
 		if arg_short'Length > 0 then
-			argNames.include(arg_short, arg'Access);
+			argNames.include(arg_short, args.Last_Element'Access);
 		end if;
 		
 		if arg_long'Length > 0 then
@@ -52,18 +52,18 @@ package body Sarge is
 	
 	--- PARSE ARGUMENTS ---
 	function parseArguments return boolean is
-		flag_it: Cursor;
-		expectValue: boolean := Boolean.False;
+		flag_it: argNames_map.Cursor;
+		expectValue: boolean := False;
 	begin
 		-- 
 		execName := Ada.Command_Line.command_name;
 		for arg in 1..Ada.Command_Line.argument_count loop
 			-- Each flag will start with a '-' character. Multiple flags can be joined together in
 			-- the same string if they're the short form flag type (one character per flag).
-			if expectValue = Boolean.True then
+			if expectValue = True then
 				-- Copy value.
 				Get(flag_it).value := arg;
-				expectValue := Boolean.False;
+				expectValue := False;
 			elsif arg(arg'First) = '-' then
 				-- Parse flag.
 				-- First check for the long form.
@@ -72,96 +72,96 @@ package body Sarge is
 					if not argNames.contains(arg(arg'First + 2..arg'Last)) then
 						-- Flag wasn't found. Abort.
 						put_line("Long flag " & arg & " wasn't found");
-						return Boolean.False;
+						return False;
 					end if;
 					
 					-- Mark as found.
 					flag_it := argNames.find(arg);
-					Element(flag_it).parsed := Boolean.True;
+					Element(flag_it).parsed := True;
 					flagCounter := flagCounter + 1;
 					
-					if Element(flag_it).hasValue = Boolean.True then
-						expectValue := Boolean.True;
+					if Element(flag_it).hasValue = True then
+						expectValue := True;
 					end if;
 				else
 					-- Parse short form flag. Parse all of them sequentially. Only the last one
 					-- is allowed to have an additional value following it.
 					for i in arg'range loop
 						flag_it := argNames.find(arg(arg'First + (1 + i)..arg'First + (2 + i)));
-						if flag_it = No_Elements then
+						if flag_it = No_Element then
 							-- Flag wasn't found. Abort.
 							put_line("Short flag " & arg(arg'First + (1 + i)..arg'First + (2 + i)) & 
 									" wasn't found.");
-							return Boolean.False;
+							return False;
+						end if;
 							
-							-- Mark as found.
-							Element(flag_it).parsed := Boolean.True;
-							flagCounter := flagCounter + 1;
+						-- Mark as found.
+						Element(flag_it).parsed := True;
+						flagCounter := flagCounter + 1;
 							
-							if Element(flag_it).hasValue = Boolean.True then
-								if i /= (arg'Length - 1) then
-									-- Flag isn't at end, thus cannot have value.
-									put_line("Flag " & arg(arg'First + (1 + i)..arg'First + (2 + i))
-													& " needs to be followed by a value string.");
-									return Boolean.False;
-								else
-									expectValue := Boolean.True;
-								end if;
+						if Element(flag_it).hasValue = True then
+							if i /= (arg'Length - 1) then
+								-- Flag isn't at end, thus cannot have value.
+								put_line("Flag " & arg(arg'First + (1 + i)..arg'First + (2 + i))
+												& " needs to be followed by a value string.");
+								return False;
+							else
+								expectValue := True;
 							end if;
 						end if;
 					end loop;
-				end if;			
+				end if;	
 			else
 				put_line("Expected flag, not value.");
-				return Boolean.False;
+				return False;
 			end if;
 		end loop;
 		
-		parsed := Boolean.True;
+		parsed := True;
 		
-		return Boolean.True;
+		return True;
 	end parseArguments;
 	
 	
 	--- GET FLAG ---
 	function getFlag(arg_flag: in string; arg_value: out arg_value) return boolean is
-		flag_it: Cursor;
+		flag_it: argNames_map.Cursor;
 	begin
-		if parsed /= Boolean.True then
-			return Boolean.False;
+		if parsed /= True then
+			return False;
 		end if;
 		
 		flag_it := argNames.find(arg_flag);
 		if flag_it = No_Elements then
-			return Boolean.False;
-		elsif Element(flag_it).parsed /= Boolean.True then
-			return Boolean.False;
+			return False;
+		elsif Element(flag_it).parsed /= True then
+			return False;
 		end if;
 		
-		if Element(flag_it).hasValue = Boolean.True then
+		if Element(flag_it).hasValue = True then
 			arg_value := Element(flag_it).value;
 		end if;
 		
-		return Boolean.True;
+		return True;
 	end getFlag;
 	
 	
 	--- EXISTS ---
 	function exists(arg_flag: in string) return boolean is
-		flag_it: Cursor;
+		flag_it: argNames_map.Cursor;
 	begin
-		if parsed /= Boolean.True then
-			return Boolean.False;
+		if parsed /= True then
+			return False;
 		end if;
 		
 		flag_it := argNames.find(arg_flag);
 		if flag_it = No_Elements then
-			return Boolean.False;
-		elsif Element(flag_it).parsed /= Boolean.True then
-			return Boolean.False;
+			return False;
+		elsif Element(flag_it).parsed /= True then
+			return False;
 		end if;
 		
-		return Boolean.True;
+		return True;
 	end exists;
 	
 	
