@@ -1,4 +1,4 @@
---	sarge_test.cpp - Implementation file for the Sarge command line argument parser test.
+--	sarge_test.adb - Implementation file for the Sarge command line argument parser test.
 	
 --	Revision 0
 	
@@ -19,10 +19,10 @@ procedure Sarge_test is
 begin
 	-- Create Sarge instance, set stuff, parse stuff.
 	Sarge.setArgument("h", "help", "Get help.", Boolean.False);
-	Sarge.setArgument("k", "kittens", "K is for kittens. Everyone needs kittens in their life.", Boolean.True);
-	Sarge.setArgument("n", "number", "Gimme a number. Any number.", Boolean.True);
-	Sarge.setArgument("a", "apple", "Just an apple.", Boolean.False);
-	Sarge.setArgument("b", "bear", "Look, it's a bear.", Boolean.False);
+	Sarge.setArgument("k", "kittens", "K is for kittens. Everyone needs kittens in their life.", True);
+	Sarge.setArgument("n", "number", "Gimme a number. Any number.", True);
+	Sarge.setArgument("a", "apple", "Just an apple.", False);
+	Sarge.setArgument("b", "bear", "Look, it's a bear.", False);
 	Sarge.setDescription("Sarge command line argument parsing testing app. For demonstration purposes and testing.");
 	Sarge.setUsage("sarge_test <options>");
 	
