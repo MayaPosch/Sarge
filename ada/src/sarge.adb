@@ -67,8 +67,8 @@ package body Sarge is
 	    -- the same string if they're the short form flag type (one character per flag).
 	    if expectValue = True then
 		-- Copy value.
-		argNames.Replace_Element(Position => flag_it, New_Item => arg_i);
-		--argNames(flag_it).value := arg;
+		--argNames.Replace_Element(Position => flag_it, New_Item => arg_i);
+		args(argNames_map.Element(flag_it)).value := arg;
 		expectValue := False;
 	    elsif Ada.Strings.Unbounded.Slice(arg, 1, 1) = "-" then
 		-- Parse flag.
@@ -111,14 +111,16 @@ package body Sarge is
 			flagCounter := flagCounter + 1;
 							
 			if args(argNames_map.Element(flag_it)).hasValue = True then
-			    if i /= (Ada.Strings.Unbounded.Length(arg) - 1) then
+			    if i /= (Ada.Strings.Unbounded.Length(arg)) then
 				-- Flag isn't at end, thus cannot have value.
-				put_line("Flag " & arg & " needs to be followed by a value string.");
+				put_line("Flag " & short_arg & " needs to be followed by a value string.");
 				return False;
 			    else
 				expectValue := True;
 			    end if;
 			end if;
+			
+			Ada.Strings.Unbounded.Delete(short_arg, 1, 1);
 		    end loop;
 		end if;	
 	    else
