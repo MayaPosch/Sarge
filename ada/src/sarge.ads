@@ -17,12 +17,12 @@ use Ada.Containers;
 
 package Sarge is 
 	type Argument is record
-		arg_short: Unbounded_String;
-		arg_long: Unbounded_String;
-		description: Unbounded_String;
-		hasValue: boolean := False;
-		value: Unbounded_String;
-		parsed: boolean := False;
+		arg_short: aliased Unbounded_String;
+		arg_long: aliased Unbounded_String;
+		description: aliased Unbounded_String;
+		hasValue: aliased boolean := False;
+		value: aliased Unbounded_String;
+		parsed: aliased boolean := False;
 	end record;
 	
 	type Argument_Access is access all Argument;
@@ -41,7 +41,8 @@ private
         function "+"(S : in String) return Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
 	package arg_vector is new Vectors(Natural, Argument);
 	args: arg_vector.vector;
-	package argNames_map is new Indefinite_Ordered_Maps(Unbounded_String, Argument_Access);
+	--package argNames_map is new Indefinite_Ordered_Maps(Unbounded_String, Argument_Access);
+	package argNames_map is new Indefinite_Ordered_Maps(Unbounded_String, Natural);
 	argNames: argNames_map.map;
 	parsed: boolean;
 	flagCounter: Integer := 0;

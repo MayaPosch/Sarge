@@ -15,24 +15,24 @@
 with Ada.Command_Line;
 with Ada.Text_IO;
 use Ada.Text_IO;
+with Ada.Strings.Unbounded.Text_IO;
+use Ada.Strings.Unbounded.Text_IO;
 
 
 package body Sarge is
     --- SET ARGUMENT ---
     procedure setArgument(arg_short: in Unbounded_String; arg_long: in Unbounded_String; desc: in Unbounded_String; hasVal: in boolean) is
 	arg: aliased Argument := (arg_short => arg_short, arg_long => arg_long, description => desc, hasValue => hasVal, value => +"", parsed => False);
-	aa: Argument_Access;
     begin
 	args.append(arg);
 		
 	-- Set up links.
 	if length(arg_short) > 0 then
-	    aa := args.Last_Element'Access;
-	    argNames.include(arg_short, aa);
+	    argNames.include(arg_short, args.Last_Index);
 	end if;
 		
 	if length(arg_long) > 0 then
-	    argNames.include(arg_long, arg'Access);
+	    argNames.include(arg_long, args.Last_Index);
 	end if;
 		
     end setArgument;
@@ -56,56 +56,64 @@ package body Sarge is
     function parseArguments return boolean is
 	flag_it: argNames_map.Cursor;
 	expectValue: boolean := False;
+	arg: Unbounded_String;
+	short_arg: Unbounded_String;
     begin
 	-- 
-	execName := Ada.Command_Line.command_name;
-	for arg in 1..Ada.Command_Line.argument_count loop
+	execName := +Ada.Command_Line.command_name;
+	for arg_i in 1..Ada.Command_Line.argument_count loop
+	    arg := +Ada.Command_Line.Argument(arg_i);
 	    -- Each flag will start with a '-' character. Multiple flags can be joined together in
 	    -- the same string if they're the short form flag type (one character per flag).
 	    if expectValue = True then
 		-- Copy value.
-		argNames(flag_it).value := arg;
+		argNames.Replace_Element(Position => flag_it, New_Item => arg_i);
+		--argNames(flag_it).value := arg;
 		expectValue := False;
-	    elsif arg(arg'First) = '-' then
+	    elsif Ada.Strings.Unbounded.Slice(arg, 1, 1) = "-" then
 		-- Parse flag.
 		-- First check for the long form.
-		if arg(arg'First + 1) = '-' then
+		if Ada.Strings.Unbounded.Slice(arg, 2, 1) = "-" then
 		    -- Long form of the flag.
-		    if not argNames.contains(arg(arg'First + 2..arg'Last)) then
+		    -- First delete the preceding dashes.
+		    arg := Ada.Strings.Unbounded.Delete(arg, 1, 3);
+		    if not argNames.contains(arg) then
 			-- Flag wasn't found. Abort.
-			put_line("Long flag " & arg'Image & " wasn't found");
+			Ada.Strings.Unbounded.Text_IO.put_line("Long flag " & arg & " wasn't found");
 			return False;
 		    end if;
 					
 		    -- Mark as found.
 		    flag_it := argNames.find(arg);
-		    argNames_map.Element(flag_it).parsed := True;
+		    args(argNames_map.Element(flag_it)).parsed := True;
 		    flagCounter := flagCounter + 1;
 					
-		    if argNames_map.Element(flag_it).hasValue = True then
+		    if args(argNames_map.Element(flag_it)).hasValue = True then
 			expectValue := True;
 		    end if;
 		else
 		    -- Parse short form flag. Parse all of them sequentially. Only the last one
 		    -- is allowed to have an additional value following it.
-		    for i in arg'range loop
-			flag_it := argNames.find(arg(arg'First + (1 + i)..arg'First + (2 + i)));
-			if flag_it = argNames_map.No_Element then
+		    -- First delete the preceding dash.
+		    arg := Ada.Strings.Unbounded.Delete(arg, 1, 2);
+		    for i in 1 .. Ada.Strings.Unbounded.Length(arg) loop
+			Ada.Strings.Unbounded.Append(short_arg, Ada.Strings.Unbounded.Element(arg, i));
+			if argNames_map.Contains(argNames, short_arg) /= True then
 			    -- Flag wasn't found. Abort.
-			    put_line("Short flag " & arg(arg'First + (1 + i)..arg'First + (2 + i)) & 
-		  " wasn't found.");
+			    put_line("Short flag " & short_arg & " wasn't found.");
 			    return False;
 			end if;
+			
+			flag_it := argNames.find(short_arg);
 							
 			-- Mark as found.
-			argNames_map.Element(flag_it).parsed := True;
+			args(argNames_map.Element(flag_it)).parsed := True;
 			flagCounter := flagCounter + 1;
 							
-			if argNames_map.Element(flag_it).hasValue = True then
-			    if i /= (arg'Length - 1) then
+			if args(argNames_map.Element(flag_it)).hasValue = True then
+			    if i /= (Ada.Strings.Unbounded.Length(arg) - 1) then
 				-- Flag isn't at end, thus cannot have value.
-				put_line("Flag " & arg(arg'First + (1 + i)..arg'First + (2 + i))
-	     & " needs to be followed by a value string.");
+				put_line("Flag " & arg & " needs to be followed by a value string.");
 				return False;
 			    else
 				expectValue := True;
@@ -128,20 +136,21 @@ package body Sarge is
     --- GET FLAG ---
     function getFlag(arg_flag: in Unbounded_String; arg_value: out Unbounded_String) return boolean is
 	flag_it: argNames_map.Cursor;
+	use argNames_map;
     begin
 	if parsed /= True then
 	    return False;
 	end if;
 		
 	flag_it := argNames.find(arg_flag);
-	if flag_it = No_Elements then
+	if flag_it = argNames_map.No_Element then
 	    return False;
-	elsif Element(flag_it).parsed /= True then
+	elsif args(argNames_map.Element(flag_it)).parsed /= True then
 	    return False;
 	end if;
 		
-	if Element(flag_it).hasValue = True then
-	    arg_value := Element(flag_it).value;
+	if args(argNames_map.Element(flag_it)).hasValue = True then
+	    arg_value := args(argNames_map.Element(flag_it)).value;
 	end if;
 		
 	return True;
@@ -151,15 +160,16 @@ package body Sarge is
     --- EXISTS ---
     function exists(arg_flag: in Unbounded_String) return boolean is
 	flag_it: argNames_map.Cursor;
+	use argNames_map;
     begin
 	if parsed /= True then
 	    return False;
 	end if;
 		
 	flag_it := argNames.find(arg_flag);
-	if flag_it = No_Elements then
+	if flag_it = argNames_map.No_Element then
 	    return False;
-	elsif Element(flag_it).parsed /= True then
+	elsif args(argNames_map.Element(flag_it)).parsed /= True then
 	    return False;
 	end if;
 		
@@ -170,16 +180,18 @@ package body Sarge is
     --- PRINT HELP ---
     procedure printHelp is
     begin
-	put_line;
+	put_line("");
 	put_line(description);
 	put_line("Usage:");
 	put_line(usageStr);
-	put_line;
+	put_line("");
 	put_line("Options:");
 		
 	-- Print out the options.
 	for opt in args.Iterate loop
-	    put_line("-" & opt.arg_short & "    --" & opt.arg_long & "    " & opt.description);
+	    Ada.Strings.Unbounded.Text_IO.put_line("-" & args(opt).arg_short 
+					    & "    --" & args(opt).arg_long 
+					    & "    " & args(opt).description);
 	end loop;
     end printHelp;
 	
@@ -187,7 +199,7 @@ package body Sarge is
     --- FLAG COUNT ---
     function flagCount return integer is
     begin
-	return flagCount;
+	return flagCounter;
     end flagCount;
 	
 	
