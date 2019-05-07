@@ -67,8 +67,7 @@ package body Sarge is
 	    -- the same string if they're the short form flag type (one character per flag).
 	    if expectValue = True then
 		-- Copy value.
-		--argNames.Replace_Element(Position => flag_it, New_Item => arg_i);
-		args(argNames_map.Element(flag_it)).value := arg;
+		args.Reference(argNames_map.Element(flag_it)).value := arg;		
 		expectValue := False;
 	    elsif Ada.Strings.Unbounded.Slice(arg, 1, 1) = "-" then
 		-- Parse flag.
