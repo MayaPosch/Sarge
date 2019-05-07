@@ -16,11 +16,16 @@ with Ada.Text_IO;
 use Ada.Text_IO;
 with Ada.Strings.Unbounded;
 use Ada.Strings.Unbounded;
+with Ada.Strings.Unbounded.Text_IO;
+use Ada.Strings.Unbounded.Text_IO;
 
 
 procedure Sarge_Test is
 
 function "+"(S : in String) return Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
+
+kittens: Unbounded_String;
+number: Unbounded_String;
 
 begin
    -- Create Sarge instance, set stuff, parse stuff.
@@ -45,5 +50,13 @@ begin
       put_line("No help requested...");
    end if;
 
-   --
+   -- Read out Kittens and Number.
+   if Sarge.getFlag(+"kittens", kittens) = True then
+	put_line("Got kittens: " & kittens);
+   end if;
+
+   if Sarge.getFlag(+"number", number) = True then
+	put_line("Got number: " & number);
+   end if;
+
 end Sarge_Test;

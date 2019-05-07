@@ -1,6 +1,6 @@
 # Sarge #
 
-Sarge is a simple and powerful command line argument parser, consisting out of just 136 lines of well-commented C++ code, contained in a single class:
+Sarge is a simple and powerful command line argument parser, with the C++ version consisting out of just 136 lines of well-commented C++ code, contained in a single class:
 
 
 	github.com/AlDanial/cloc v 1.80  T=0.01 s (220.4 files/s, 25019.2 lines/s)
@@ -86,6 +86,67 @@ A Makefile has been added to the root of the project. Simply execute `make` in t
 	Got kittens: Mew
 
 As you can see, no kittens were harmed in the production of this code :)
+
+## Ada version
+
+The Ada version of Sarge is pretty much a straight port of the C++ version. It consists out of a single package (Sarge), with 172 lines of code. Its biggest limitation compared to the C++ version at this point is that one cannot use multiple instances of Sarge since the relevant data structures are part of the package. This should not pose any issues in the average usage scenario, however.
+
+This port has been mildly tested, but should definitely be considered experimental. Feature requests and the like are most welcome.
+
+The test application has also been ported from the C++ version, showing the use of the package:
+
+	with Sarge;
+	with Ada.Text_IO;
+	use Ada.Text_IO;
+	with Ada.Strings.Unbounded;
+	use Ada.Strings.Unbounded;
+	with Ada.Strings.Unbounded.Text_IO;
+	use Ada.Strings.Unbounded.Text_IO;
+
+
+	procedure Sarge_Test is
+
+	function "+"(S : in String) return Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
+
+	kittens: Unbounded_String;
+	number: Unbounded_String;
+
+	begin
+	   Sarge.setArgument(+"h", +"help", +"Get help.", False);
+	   Sarge.setArgument(+"k", +"kittens", +"K is for kittens. Everyone needs kittens in their 	life.", True);
+	   Sarge.setArgument(+"n", +"number", +"Gimme a number. Any number.", True);
+	   Sarge.setArgument(+"a", +"apple", +"Just an apple.", False);
+	   Sarge.setArgument(+"b", +"bear", +"Look, it's a bear.", False);
+	   Sarge.setDescription(+"Sarge command line argument parsing testing app. For demonstration purposes and testing.");
+	   Sarge.setUsage(+"sarge_test <options>");
+
+	   if Sarge.parseArguments /= True then
+	      put_line("Couldn't parse arguments...");
+	      return;
+	   end if;
+
+	   put_line("Number of flags found: " & Sarge.flagCount'Image);
+
+	   if Sarge.exists(+"help") /= False then
+	      Sarge.printHelp;
+	   else
+	      put_line("No help requested...");
+	   end if;
+
+	   -- Read out Kittens and Number.
+	   if Sarge.getFlag(+"kittens", kittens) = True then
+		put_line("Got kittens: " & kittens);
+	   end if;
+
+	   if Sarge.getFlag(+"number", number) = True then
+		put_line("Got number: " & number);
+	   end if;
+
+	end Sarge_Test; 
+
+The Ada test application is provided as a GNAT Programming Studio (GPS) project. The Makefile in the `ada` folder should not be used when compiling the test application. 
+
+The Sarge package is found in the `ada/src` folder. One can use it directly from there by including it one's project, or copying it into the project's source tree, depending on one's requirements.
 
 ## Status ##
 
