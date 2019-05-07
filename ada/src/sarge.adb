@@ -73,10 +73,10 @@ package body Sarge is
 	    elsif Ada.Strings.Unbounded.Slice(arg, 1, 1) = "-" then
 		-- Parse flag.
 		-- First check for the long form.
-		if Ada.Strings.Unbounded.Slice(arg, 2, 1) = "-" then
+		if Ada.Strings.Unbounded.Slice(arg, 1, 2) = "--" then
 		    -- Long form of the flag.
 		    -- First delete the preceding dashes.
-		    arg := Ada.Strings.Unbounded.Delete(arg, 1, 3);
+		    arg := Ada.Strings.Unbounded.Delete(arg, 1, 2);
 		    if not argNames.contains(arg) then
 			-- Flag wasn't found. Abort.
 			Ada.Strings.Unbounded.Text_IO.put_line("Long flag " & arg & " wasn't found");
@@ -95,7 +95,7 @@ package body Sarge is
 		    -- Parse short form flag. Parse all of them sequentially. Only the last one
 		    -- is allowed to have an additional value following it.
 		    -- First delete the preceding dash.
-		    arg := Ada.Strings.Unbounded.Delete(arg, 1, 2);
+		    arg := Ada.Strings.Unbounded.Delete(arg, 1, 1);
 		    for i in 1 .. Ada.Strings.Unbounded.Length(arg) loop
 			Ada.Strings.Unbounded.Append(short_arg, Ada.Strings.Unbounded.Element(arg, i));
 			if argNames_map.Contains(argNames, short_arg) /= True then
