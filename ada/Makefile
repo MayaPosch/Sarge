@@ -3,8 +3,7 @@
 
 export TOP := $(CURDIR)
 
-GPP = g++
-GCC = gcc
+
 GNATMAKE = gnatmake
 MAKEDIR = mkdir -p
 RM = rm -f
@@ -14,17 +13,15 @@ MAKE = make
 BIN_OUTPUT := sarge_test
 INCLUDE = -Isrc/
 FLAGS += 
-ADAFLAGS := $(FLAGS) -g $(INCLUDE)
+ADAFLAGS := -aIsrc -D obj/
 ifdef OS
-	#LIBS += -lboost_filesystem-mt -lboost_program_options-mt -lboost_system-mt
 	EXT = .exe
 else
-	#LIBS += -lboost_filesystems -lboost_program_options -lboost_system
+	# No extension.
 endif
 
 SOURCES := $(wildcard src/*.adb)
-SPECS := $(wildcard src/*.ads)
-OBJECTS := $(addprefix obj/,$(notdir) $(CPP_SOURCES:.adb=.o))
+OBJECTS := $(addprefix obj/,$(notdir) $(SOURCES:.adb=.o))
 
 TEST_SOURCES := $(wildcard test/*.adb)
 TEST_OBJECTS := $(addprefix obj/,$(notdir) $(TEST_SOURCES:.adb=.o))
@@ -34,14 +31,14 @@ all: makedir $(OBJECTS) test
 test: $(TEST_OBJECTS) $(BIN_OUTPUT)
 	
 obj/%.o: %.adb
-	#$(GCC) -c -o $@  $(ADAFLAGS) $(SPECS) $<
+	$(GNATMAKE) $(ADAFLAGS) -c $<
 	
 build:
-	$(GNATMAKE) $(SOURCES)
+	$(GNATMAKE) $(TEST_SOURCES) -aIsrc
 	
 $(BIN_OUTPUT):
 	$(RM) bin/$@$(EXT)
-	#$(GPP) -o bin/$@ $(ADAFLAGS) $(OBJECTS) $(SPECS) $(TEST_OBJECTS) $(LIBS)
+	$(GNATMAKE) -o bin/$@ $(OBJECTS) $(TEST_OBJECTS)
 	
 makedir:
 	$(MAKEDIR) bin
