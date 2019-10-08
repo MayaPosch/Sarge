@@ -1,16 +1,15 @@
 # Sarge #
 
-Sarge is a simple and powerful command line argument parser, with the C++ version consisting out of just 136 lines of well-commented C++ code, contained in a single class:
+Sarge is a simple and powerful command line argument parser, with the C++ version consisting out of just 143 lines of well-commented C++ code, contained in a single class:
 
 
-	github.com/AlDanial/cloc v 1.80  T=0.01 s (220.4 files/s, 25019.2 lines/s)
 	-------------------------------------------------------------------------------
 	Language                     files          blank        comment           code
 	-------------------------------------------------------------------------------
-	C++                              1             37             35            103
-	C/C++ Header                     1             12              7             33
+	C++                              1             40             40            108
+	C/C++ Header                     1             12              7             35
 	-------------------------------------------------------------------------------
-	SUM:                             2             49             42            136
+	SUM:                             2             52             47            143
 	-------------------------------------------------------------------------------
 
  
@@ -48,11 +47,30 @@ Simply add the header file and source file to one's C++ project and use the clas
 		if (sarge.getFlag("kittens", kittens)) {
 			std::cout << "Got kittens: " << kittens << std::endl;
 		}
+
+		std::string textarg;
+		if (sarge.getTextArgument(0, textarg)) {
+			std::cout << "Got text argument: " << textarg << std::endl;
+		}
 		
 		return 0;
 	}
 
 Only dependencies are a reasonably modern C++ compiler, capable of supporting at least C++11 (STL datastructure improvements).
+
+## API ##
+
+	void setArgument(std::string arg_short, std::string arg_long, std::string desc, bool hasVal);
+	void setArguments(std::vector<Argument> args);
+	void setDescription(std::string desc);
+	void setUsage(std::string use);
+	bool parseArguments(int argc, char** argv);
+	bool getFlag(std::string arg_flag, std::string &arg_value);
+	bool exists(std::string arg_flag);
+	bool getTextArgument(uint32_t index, std::string &value);
+	void printHelp();
+	int flagCount();
+	std::string executableName();
 
 ## Supported flag types ##
 
@@ -66,7 +84,7 @@ Options can optionally be followed by a value string. This has to be noted when 
 
 It's also supported to supply multiple short options combined to Sarge, e.g.: `-hnklm`. Important here is that options which require a value to follow them have to always be at the end of such a chain.
 
-Providing a string without flag associated with them is at this point not supported.
+String without flag associated with them are made available using the `getTextArgument()` method after parsing. These arguments are only allowed to exist after the flags section.
 
 ## Compiling the test application ##
 
