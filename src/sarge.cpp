@@ -61,11 +61,14 @@ bool Sarge::parseArguments(int argc, char** argv) {
 		
 		if (expectValue) {
 			// Copy value.
-			flag_it->second->value = entry;
-			
+			flag_it->second->value = entry;			
 			expectValue = false;
 		}
 		else if (entry.compare(0, 1, "-") == 0) {
+			if (textArguments.size() > 0) { 
+				std::cerr << "Flags not allowed after text arguments." << std::endl; 
+			}
+			
 			// Parse flag.
 			// First check for the long form.
 			if (entry.compare(0, 2, "--") == 0) {
@@ -118,8 +121,8 @@ bool Sarge::parseArguments(int argc, char** argv) {
 			}
 		}
 		else {
-			std::cerr << "Expected flag, not value." << std::endl;
-			return false;
+			// Add to text argument vector.
+			textArguments.push_back(entry);
 		}
 	}
 	
@@ -138,9 +141,7 @@ bool Sarge::getFlag(std::string arg_flag, std::string &arg_value) {
 	if (it == argNames.end()) { return false; }
 	if (!it->second->parsed) { return false; }
 	
-	if (it->second->hasValue) {
-		arg_value = it->second->value;
-	}
+	if (it->second->hasValue) { arg_value = it->second->value; }
 	
 	return true;
 }
@@ -156,6 +157,17 @@ bool Sarge::exists(std::string arg_flag) {
 	if (!it->second->parsed) { return false; }
 	
 	return true;
+}
+
+
+// --- GET TEXT ARGUMENT ---
+// Updates the value parameter with the text argument (unbound value) if found.
+// Index starts at 0.
+// Returns true if found, else false.
+bool Sarge::getTextArgument(uint32_t index, std::string &value) {
+	if (index < textArguments.size()) { value = textArguments.at(index); return true; }
+	
+	return false;
 }
 
 

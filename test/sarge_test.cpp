@@ -55,6 +55,11 @@ int main(int argc, char** argv) {
 		std::cout << "Got number: " << number << std::endl;
 	}
 	
+	std::string textarg;
+	if (sarge.getTextArgument(0, textarg)) {
+		std::cout << "Got text argument: " << textarg << std::endl;
+	}
+	
 	return 0;
 }
 

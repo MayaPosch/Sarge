@@ -37,6 +37,7 @@ class Sarge {
 	std::string execName;
 	std::string description;
 	std::string usage;
+	std::vector<std::string> textArguments;
 	
 public:
 	void setArgument(std::string arg_short, std::string arg_long, std::string desc, bool hasVal);
@@ -46,6 +47,7 @@ public:
 	bool parseArguments(int argc, char** argv);
 	bool getFlag(std::string arg_flag, std::string &arg_value);
 	bool exists(std::string arg_flag);
+	bool getTextArgument(uint32_t index, std::string &value);
 	void printHelp();
 	int flagCount() { return flagCounter; }
 	std::string executableName() { return execName; }
