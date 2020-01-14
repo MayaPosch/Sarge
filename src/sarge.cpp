@@ -183,6 +183,6 @@ void Sarge::printHelp() {
 	// Print out the options.
 	std::vector<std::unique_ptr<Argument> >::const_iterator it;
 	for (it = args.cbegin(); it != args.cend(); ++it) {
-		std::cout << "-" << (*it)->arg_short << "\t--" << (*it)->arg_long << "\t\t" << (*it)->description << std::endl;
+		std::cout << ((*it)->arg_short != "" ? "-" : "") << (*it)->arg_short << "\t--" << (*it)->arg_long << "\t\t" << (*it)->description << std::endl;
 	}
 }
