@@ -184,7 +184,9 @@ void Sarge::printHelp() {
 	int count = 1; 
 	std::vector<std::unique_ptr<Argument> >::const_iterator it;
 	for (it = args.cbegin(); it != args.cend(); ++it) {
-		if ((*it)->arg_long.size() > count) count = (*it)->arg_long.size();
+		if ((*it)->arg_long.size() > count) { 
+			count = (*it)->arg_long.size();
+		}
 	}
 	
 	count += 3; // Number of actual spaces between the longest arg_long and description.
