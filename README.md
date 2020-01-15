@@ -103,9 +103,13 @@ A Makefile has been added to the root of the project. Simply execute `make` in t
 	        sarge_test <options>
 	
 	Options:
-	-h      --help          Get help.
-	-k      --kittens               K is for kittens. Everyone needs kittens in their life.
-	Got kittens: Mew
+	-h, --help      Get help.
+	-k, --kittens   K is for kittens. Everyone needs kittens in their life.
+	-n, --number    Gimme a number. Any number.
+	-a, --apple     Just an apple.
+	-b, --bear      Look, it's a bear.
+    	--snake     Snakes only come in long form, there are no short snakes.
+
 
 As you can see, no kittens were harmed in the production of this code :)
 
