@@ -108,7 +108,7 @@ A Makefile has been added to the root of the project. Simply execute `make` in t
 	-n, --number    Gimme a number. Any number.
 	-a, --apple     Just an apple.
 	-b, --bear      Look, it's a bear.
-		--snake     Snakes only come in long form, there are no short snakes.
+	    --snake     Snakes only come in long form, there are no short snakes.
 
 
 As you can see, no kittens were harmed in the production of this code :)
