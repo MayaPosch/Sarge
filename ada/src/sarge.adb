@@ -123,8 +123,8 @@ package body Sarge is
 		    end loop;
 		end if;	
 	    else
-		put_line("Expected flag, not value.");
-		return False;
+			-- Add to text argument vector.
+			textArguments.append(arg);
 	    end if;
 	end loop;
 		
@@ -176,6 +176,18 @@ package body Sarge is
 		
 	return True;
     end exists;
+	
+	
+	--- GET TEXT ARGUMENT ---
+	function getTextArgument(index: in Integer; value: out Unbounded_String) return boolean is
+	begin
+		if index < Integer(tArgVector.length(textArguments)) then
+			value := textArguments(index);
+			return True;
+		end if;
+		
+		return False;
+	end getTextArgument;
 	
 	
     --- PRINT HELP ---

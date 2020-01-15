@@ -33,6 +33,7 @@ package Sarge is
 	function parseArguments return boolean;
 	function getFlag(arg_flag: in Unbounded_String; arg_value: out Unbounded_String) return boolean;
 	function exists(arg_flag: in Unbounded_String) return boolean;
+	function getTextArgument(index: in Integer; value: out Unbounded_String) return boolean;
 	procedure printHelp;
 	function flagCount return integer;
 	function executableName return Unbounded_String;
@@ -49,4 +50,6 @@ private
 	execName: Unbounded_String;
 	description: Unbounded_String;
 	usageStr: Unbounded_String;
+	package tArgVector is new Vectors(Natural, Unbounded_String);
+	textArguments: tArgVector.vector;
 end Sarge;
