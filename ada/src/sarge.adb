@@ -171,7 +171,7 @@ package body Sarge is
 	if flag_it = argNames_map.No_Element then
 	    return False;
 	elsif args(argNames_map.Element(flag_it)).parsed /= True then
-	    return False;
+		return False;
 	end if;
 		
 	return True;
@@ -192,6 +192,8 @@ package body Sarge is
 	
     --- PRINT HELP ---
     procedure printHelp is
+	count: Integer := 1;
+	spaceCnt: Integer;
     begin
 	put_line("");
 	put_line(description);
@@ -199,12 +201,29 @@ package body Sarge is
 	put_line(usageStr);
 	put_line("");
 	put_line("Options:");
+	
+	-- Determine whitespace needed between arg_long and description.
+	for flag in args.Iterate loop
+		if Integer(Ada.Strings.Unbounded.length(args(flag).arg_long)) > count then
+			count := Integer(Ada.Strings.Unbounded.length(args(flag).arg_long));
+		end if;
+	end loop;
+	
+	count := count + 3; -- Number of actual spaces between the longest arg_long and description.
 		
 	-- Print out the options.
 	for opt in args.Iterate loop
-	    Ada.Strings.Unbounded.Text_IO.put_line("-" & args(opt).arg_short 
-					    & "    --" & args(opt).arg_long 
-					    & "    " & args(opt).description);
+		--spaceStr := Unbound_String(count - Ada.Strings.Unbounded.length(args(opt).arg_long)
+		spaceCnt := (count - Integer(Ada.Strings.Unbounded.length(args(opt).arg_long)));
+		if Ada.Strings.Unbounded.length(args(opt).arg_short) < 1 then
+			Ada.Strings.Unbounded.Text_IO.put_line("    " & args(opt).arg_short 
+					    & "--" & args(opt).arg_long 
+					    & spaceCnt * " " & args(opt).description);
+		else
+			Ada.Strings.Unbounded.Text_IO.put_line("-" & args(opt).arg_short 
+					    & ", --" & args(opt).arg_long 
+					    & spaceCnt * " " & args(opt).description);
+		end if;
 	end loop;
     end printHelp;
 	
