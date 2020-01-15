@@ -1,15 +1,15 @@
 # Sarge #
 
-Sarge is a simple and powerful command line argument parser, with the C++ version consisting out of just 143 lines of well-commented C++ code, contained in a single class:
+Sarge is a simple and powerful command line argument parser, with the C++ version consisting out of <200 lines of well-commented C++ code, contained in a single class:
 
 
 	-------------------------------------------------------------------------------
 	Language                     files          blank        comment           code
 	-------------------------------------------------------------------------------
-	C++                              1             40             40            108
+	C++                              1             42             41            116
 	C/C++ Header                     1             12              7             35
 	-------------------------------------------------------------------------------
-	SUM:                             2             52             47            143
+	SUM:                             2             54             48            151
 	-------------------------------------------------------------------------------
 
  
@@ -26,6 +26,10 @@ Simply add the header file and source file to one's C++ project and use the clas
 		
 		sarge.setArgument("h", "help", "Get help.", false);
 		sarge.setArgument("k", "kittens", "K is for kittens. Everyone needs kittens in their life.", true);
+		sarge.setArgument("n", "number", "Gimme a number. Any number.", true);
+		sarge.setArgument("a", "apple", "Just an apple.", false);
+		sarge.setArgument("b", "bear", "Look, it's a bear.", false);
+		sarge.setArgument("", "snake", "Snakes only come in long form, there are no short snakes.", false);
 		sarge.setDescription("Sarge command line argument parsing testing app. For demonstration purposes and testing.");
 		sarge.setUsage("sarge_test <options>");
 		
@@ -74,7 +78,7 @@ Only dependencies are a reasonably modern C++ compiler, capable of supporting at
 
 ## Supported flag types ##
 
-Sarge supports both short and long options, prefixed by one or two dashes ('-') respectively.
+Sarge supports both short and long options, prefixed by one or two dashes ('-') respectively. The short option can be left empty, which will only enable the long option.
 
 Short option: `-h`.
 
