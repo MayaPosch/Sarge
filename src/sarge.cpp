@@ -190,7 +190,7 @@ void Sarge::printHelp() {
 	// Print out the options.
 	for (it = args.cbegin(); it != args.cend(); ++it)
 	{
-		std::cout << ((*it)->arg_short != "" ? "-" + (*it)->arg_short + ", " : "    ") << "--" << (*it)->arg_long;
+		std::cout << ((*it)->arg_short.empty() ? "    " : "-" + (*it)->arg_short + ", ") << "--" << (*it)->arg_long;
 		std::cout << std::string(count - (*it)->arg_long.size(), ' ') << (*it)->description << std::endl;
 	}
 }
