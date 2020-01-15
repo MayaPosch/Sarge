@@ -180,9 +180,17 @@ void Sarge::printHelp() {
 	std::cout << std::endl;
 	std::cout << "Options: " << std::endl;
 	
-	// Print out the options.
+	// determine whitespaces needed between art_long and description
+	int count = 1; 
 	std::vector<std::unique_ptr<Argument> >::const_iterator it;
-	for (it = args.cbegin(); it != args.cend(); ++it) {
-		std::cout << "-" << (*it)->arg_short << "\t--" << (*it)->arg_long << "\t\t" << (*it)->description << std::endl;
+	for (it = args.cbegin(); it != args.cend(); ++it)
+		if ((*it)->arg_long.size() > count) count = (*it)->arg_long.size();
+	count += 3; // number of actual spaces between the longest arg_long and description
+
+	// Print out the options.
+	for (it = args.cbegin(); it != args.cend(); ++it)
+	{
+		std::cout << ((*it)->arg_short.empty() ? "    " : "-" + (*it)->arg_short + ", ") << "--" << (*it)->arg_long;
+		std::cout << std::string(count - (*it)->arg_long.size(), ' ') << (*it)->description << std::endl;
 	}
 }
