@@ -38,8 +38,10 @@ class Sarge {
 	std::string description;
 	std::string usage;
 	std::vector<std::string> textArguments;
+  bool permissive = false;
 	
 public:
+  Sarge(bool permissive_ = false);
 	void setArgument(std::string arg_short, std::string arg_long, std::string desc, bool hasVal);
 	void setArguments(std::vector<Argument> args);
 	void setDescription(std::string desc) { this->description = desc; }
