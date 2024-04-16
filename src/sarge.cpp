@@ -72,6 +72,7 @@ bool Sarge::parseArguments(int argc, char** argv) {
 		else if (entry.compare(0, 1, "-") == 0) {
 			if (permissive == false && textArguments.size() > 0) {
 				std::cerr << "Flags not allowed after text arguments." << std::endl;
+				return false;
 			}
 
 			// Parse flag.
@@ -82,13 +83,11 @@ bool Sarge::parseArguments(int argc, char** argv) {
 			
 				flag_it = argNames.find(entry);
 				if (flag_it == argNames.end()) {
-					if (permissive) {
-						continue;
-					} else {
-						// Flag wasn't found. Abort.
-						std::cerr << "Long flag " << entry << " wasn't found." << std::endl;
-						return false;
-					}
+					if (permissive) { continue; }
+					
+					// Flag wasn't found. Abort.
+					std::cerr << "Long flag " << entry << " wasn't found." << std::endl;
+					return false;
 				}
 				
 				// Mark as found.
@@ -107,13 +106,11 @@ bool Sarge::parseArguments(int argc, char** argv) {
 					std::string k(&(entry[i]), 1);
 					flag_it = argNames.find(k);
 					if (flag_it == argNames.end()) {
-						if (permissive) {
-							continue;
-						} else {
-							// Flag wasn't found. Abort.
-							std::cerr << "Short flag " << k << " wasn't found." << std::endl;
-							return false;
-						}
+						if (permissive) { continue; }
+						
+						// Flag wasn't found. Abort.
+						std::cerr << "Short flag " << k << " wasn't found." << std::endl;
+						return false;
 					}
 					
 					// Mark as found.
