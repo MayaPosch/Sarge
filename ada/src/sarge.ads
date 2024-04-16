@@ -28,6 +28,7 @@ package Sarge is
 	type Argument_Access is access all Argument;
 	
 	procedure setArgument(arg_short: in Unbounded_String; arg_long: in Unbounded_String; desc: in Unbounded_String; hasVal: in boolean);
+	procedure setPermissive(value: boolean);
 	procedure setDescription(desc: in Unbounded_String);
 	procedure setUsage(usage: in Unbounded_String);
 	function parseArguments return boolean;
@@ -41,15 +42,16 @@ package Sarge is
 private
         function "+"(S : in String) return Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
 	package arg_vector is new Vectors(Natural, Argument);
-	args: arg_vector.vector;
+	args		: arg_vector.vector;
 	--package argNames_map is new Indefinite_Ordered_Maps(Unbounded_String, Argument_Access);
 	package argNames_map is new Indefinite_Ordered_Maps(Unbounded_String, Natural);
-	argNames: argNames_map.map;
-	parsed: boolean;
-	flagCounter: Integer := 0;
-	execName: Unbounded_String;
-	description: Unbounded_String;
-	usageStr: Unbounded_String;
+	argNames	: argNames_map.map;
+	parsed		: boolean;
+	flagCounter	: Integer := 0;
+	execName	: Unbounded_String;
+	description	: Unbounded_String;
+	usageStr	: Unbounded_String;
 	package tArgVector is new Vectors(Natural, Unbounded_String);
-	textArguments: tArgVector.vector;
+	textArguments	: tArgVector.vector;
+	permissive	: boolean := false;
 end Sarge;

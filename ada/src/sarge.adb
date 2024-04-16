@@ -38,17 +38,24 @@ package body Sarge is
     end setArgument;
 	
 	
+	--- SET PERMISSIVE ---
+	procedure setPermissive(value: boolean) is
+	begin
+		permissive := value;
+	end setPermissive;
+	
+	
     --- SET DESCRIPTION ---
     procedure setDescription(desc: in Unbounded_String) is
     begin
-	description := desc;
+		description := desc;
     end setDescription;
 	
 	
     --- SET USAGE ---
     procedure setUsage(usage: in Unbounded_String) is
     begin
-	usageStr := usage;
+		usageStr := usage;
     end setUsage;
 	
 	
@@ -70,62 +77,77 @@ package body Sarge is
 		args.Reference(argNames_map.Element(flag_it)).value := arg;		
 		expectValue := False;
 	    elsif Ada.Strings.Unbounded.Slice(arg, 1, 1) = "-" then
-		-- Parse flag.
-		-- First check for the long form.
-		if Ada.Strings.Unbounded.Slice(arg, 1, 2) = "--" then
-		    -- Long form of the flag.
-		    -- First delete the preceding dashes.
-		    arg := Ada.Strings.Unbounded.Delete(arg, 1, 2);
-		    if not argNames.contains(arg) then
-			-- Flag wasn't found. Abort.
-			Ada.Strings.Unbounded.Text_IO.put_line("Long flag " & arg & " wasn't found");
-			return False;
-		    end if;
-					
-		    -- Mark as found.
-		    flag_it := argNames.find(arg);
-		    args(argNames_map.Element(flag_it)).parsed := True;
-		    flagCounter := flagCounter + 1;
-					
-		    if args(argNames_map.Element(flag_it)).hasValue = True then
-			expectValue := True;
-		    end if;
-		else
-		    -- Parse short form flag. Parse all of them sequentially. Only the last one
-		    -- is allowed to have an additional value following it.
-		    -- First delete the preceding dash.
-		    arg := Ada.Strings.Unbounded.Delete(arg, 1, 1);
-		    for i in 1 .. Ada.Strings.Unbounded.Length(arg) loop
-			Ada.Strings.Unbounded.Append(short_arg, Ada.Strings.Unbounded.Element(arg, i));
-			if argNames_map.Contains(argNames, short_arg) /= True then
-			    -- Flag wasn't found. Abort.
-			    put_line("Short flag " & short_arg & " wasn't found.");
-			    return False;
-			end if;
-			
-			flag_it := argNames.find(short_arg);
-							
-			-- Mark as found.
-			args(argNames_map.Element(flag_it)).parsed := True;
-			flagCounter := flagCounter + 1;
-							
-			if args(argNames_map.Element(flag_it)).hasValue = True then
-			    if i /= (Ada.Strings.Unbounded.Length(arg)) then
-				-- Flag isn't at end, thus cannot have value.
-				put_line("Flag " & short_arg & " needs to be followed by a value string.");
+			if permissive = false and textArguments.Length > 0 then
+				put_line("Flags not allowed after text arguments.");
 				return False;
-			    else
-				expectValue := True;
-			    end if;
 			end if;
-			
-			Ada.Strings.Unbounded.Delete(short_arg, 1, 1);
-		    end loop;
-		end if;	
+		
+			-- Parse flag.
+			-- First check for the long form.
+			if Ada.Strings.Unbounded.Slice(arg, 1, 2) = "--" then
+				-- Long form of the flag.
+				-- First delete the preceding dashes.
+				arg := Ada.Strings.Unbounded.Delete(arg, 1, 2);
+				if not argNames.contains(arg) then
+					if permissive = true then
+						goto Continue;
+					end if;
+					
+					-- Flag wasn't found. Abort.
+					Ada.Strings.Unbounded.Text_IO.put_line("Long flag " & arg & " wasn't found");
+					return False;
+				end if;
+						
+				-- Mark as found.
+				flag_it := argNames.find(arg);
+				args(argNames_map.Element(flag_it)).parsed := True;
+				flagCounter := flagCounter + 1;
+						
+				if args(argNames_map.Element(flag_it)).hasValue = True then
+				expectValue := True;
+				end if;
+			else
+				-- Parse short form flag. Parse all of them sequentially. Only the last one
+				-- is allowed to have an additional value following it.
+				-- First delete the preceding dash.
+				arg := Ada.Strings.Unbounded.Delete(arg, 1, 1);
+				for i in 1 .. Ada.Strings.Unbounded.Length(arg) loop
+				Ada.Strings.Unbounded.Append(short_arg, Ada.Strings.Unbounded.Element(arg, i));
+				if argNames_map.Contains(argNames, short_arg) /= True then
+					if permissive = true then
+						goto Continue;
+					end if;
+					
+					-- Flag wasn't found. Abort.
+					put_line("Short flag " & short_arg & " wasn't found.");
+					return False;
+				end if;
+				
+				flag_it := argNames.find(short_arg);
+								
+				-- Mark as found.
+				args(argNames_map.Element(flag_it)).parsed := True;
+				flagCounter := flagCounter + 1;
+								
+				if args(argNames_map.Element(flag_it)).hasValue = True then
+					if i /= (Ada.Strings.Unbounded.Length(arg)) then
+					-- Flag isn't at end, thus cannot have value.
+					put_line("Flag " & short_arg & " needs to be followed by a value string.");
+					return False;
+					else
+					expectValue := True;
+					end if;
+				end if;
+				
+				Ada.Strings.Unbounded.Delete(short_arg, 1, 1);
+				end loop;
+			end if;
 	    else
 			-- Add to text argument vector.
 			textArguments.append(arg);
 	    end if;
+		
+		<<Continue>>
 	end loop;
 		
 	parsed := True;
