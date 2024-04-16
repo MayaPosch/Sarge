@@ -21,7 +21,7 @@
 // if Sarge is used with gunit's mixed in CMD parser then call the constructor with true in order to make
 // Sarge not bail out if the arguments can't be parsed so Sarge will be more tolerant in parsing
 Sarge::Sarge(bool permissive_) {
-  permissive = permissive_;
+	permissive = permissive_;
 }
 
 // --- SET ARGUMENT ---
@@ -66,13 +66,13 @@ bool Sarge::parseArguments(int argc, char** argv) {
 		
 		if (expectValue) {
 			// Copy value.
-			flag_it->second->value = entry;			
+			flag_it->second->value = entry;	
 			expectValue = false;
 		}
 		else if (entry.compare(0, 1, "-") == 0) {
-      if (permissive == false && textArguments.size() > 0) {
-        std::cerr << "Flags not allowed after text arguments." << std::endl;
-      }
+			if (permissive == false && textArguments.size() > 0) {
+				std::cerr << "Flags not allowed after text arguments." << std::endl;
+			}
 
 			// Parse flag.
 			// First check for the long form.
@@ -82,13 +82,13 @@ bool Sarge::parseArguments(int argc, char** argv) {
 			
 				flag_it = argNames.find(entry);
 				if (flag_it == argNames.end()) {
-          if (permissive) {
-             continue;
-          } else {
-					  // Flag wasn't found. Abort.
-					  std::cerr << "Long flag " << entry << " wasn't found." << std::endl;
-					  return false;
-          }
+					if (permissive) {
+						continue;
+					} else {
+						// Flag wasn't found. Abort.
+						std::cerr << "Long flag " << entry << " wasn't found." << std::endl;
+						return false;
+					}
 				}
 				
 				// Mark as found.
@@ -107,13 +107,13 @@ bool Sarge::parseArguments(int argc, char** argv) {
 					std::string k(&(entry[i]), 1);
 					flag_it = argNames.find(k);
 					if (flag_it == argNames.end()) {
-            if (permissive) {
-              continue;
-            } else {
-              // Flag wasn't found. Abort.
-              std::cerr << "Short flag " << k << " wasn't found." << std::endl;
-              return false;
-            }
+						if (permissive) {
+							continue;
+						} else {
+							// Flag wasn't found. Abort.
+							std::cerr << "Short flag " << k << " wasn't found." << std::endl;
+							return false;
+						}
 					}
 					
 					// Mark as found.
