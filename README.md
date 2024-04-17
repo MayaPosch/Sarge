@@ -6,13 +6,12 @@ Sarge is a simple and powerful command line argument parser, with the C++ versio
 	-------------------------------------------------------------------------------
 	Language                     files          blank        comment           code
 	-------------------------------------------------------------------------------
-	C++                              1             42             41            116
-	C/C++ Header                     1             12              7             35
+	C++                              1             44             43            124
+	C/C++ Header                     1             12              7             37
 	-------------------------------------------------------------------------------
-	SUM:                             2             54             48            151
+	SUM:                             2             56             50            161
 	-------------------------------------------------------------------------------
 
- 
 
 Simply add the header file and source file to one's C++ project and use the class as in the project's test code:
 
@@ -64,6 +63,7 @@ Only dependencies are a reasonably modern C++ compiler, capable of supporting at
 
 ## API ##
 
+	Sarge(bool permissive_ = false);
 	void setArgument(std::string arg_short, std::string arg_long, std::string desc, bool hasVal);
 	void setArguments(std::vector<Argument> args);
 	void setDescription(std::string desc);
@@ -75,6 +75,8 @@ Only dependencies are a reasonably modern C++ compiler, capable of supporting at
 	void printHelp();
 	int flagCount();
 	std::string executableName();
+	
+The constructor takes a `permissive_` argument, which when set to `true` does not bail out with an error when further command line arguments follow a trailing text segment. This can be useful when e.g. using Sarge with a unit testing framework like GUnit.
 
 ## Supported flag types ##
 
@@ -115,14 +117,14 @@ As you can see, no kittens were harmed in the production of this code :)
 
 # Ada version #
 
-The Ada version of Sarge (found in the `ada/` folder) is pretty much a straight port of the C++ version. It consists out of a single package (Sarge), with <200 lines of code. 
+The Ada version of Sarge (found in the `ada/` folder) is pretty much a straight port of the C++ version. It consists out of a single package (Sarge), with just over 200 lines of code. 
 
 	-------------------------------------------------------------------------------
 	Language                     files          blank        comment           code
 	-------------------------------------------------------------------------------
-	Ada                              2             58             44            197
+	Ada                              2             64             45            214
 	-------------------------------------------------------------------------------
-	SUM:                             2             58             44            197
+	SUM:                             2             64             45            214
 	-------------------------------------------------------------------------------
 
 
@@ -132,6 +134,7 @@ Its biggest limitation compared to the C++ version at this point is that one can
 ## API ##
 
 	procedure setArgument(arg_short: in Unbounded_String; arg_long: in Unbounded_String; desc: in Unbounded_String; hasVal: in boolean);
+	procedure setPermissive(value: boolean);
 	procedure setDescription(desc: in Unbounded_String);
 	procedure setUsage(usage: in Unbounded_String);
 	function parseArguments return boolean;
@@ -141,6 +144,8 @@ Its biggest limitation compared to the C++ version at this point is that one can
 	procedure printHelp;
 	function flagCount return integer;
 	function executableName return Unbounded_String;
+	
+The `setPermissive` procedure can be used to disable bailing out with an error if further flags follow a text segment. This can be useful when e.g. combining Sarge with a unit testing framework. The default value is set to `false`.
 
 ## Example ##
 
